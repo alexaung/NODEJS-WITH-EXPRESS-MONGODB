@@ -8,7 +8,8 @@ router.param("id", moviesController.checkId);
 router
   .route("/")
   .get(moviesController.getAllMovies)
-  .post(moviesController.createMovie);
+  //chaining multiple middleware
+  .post(moviesController.validateBody, moviesController.createMovie);
 
 router
   .route("/:id")

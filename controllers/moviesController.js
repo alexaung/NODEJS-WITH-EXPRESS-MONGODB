@@ -16,7 +16,18 @@ exports.checkId = (req, res, next, value) => {
   next();
 };
 
+exports.validateBody = (req, res, next) => {
+  if (!req.body.name || !req.body.releaseYear) {
+    return res.status(400).json({
+      status: "Fail",
+      message: "Not a valid movie data",
+    });
+  }
+  next();
+};
+
 // ROUTE HANDLER FUNCTIONS
+
 exports.getAllMovies = (req, res) => {
   res.status(200).json({
     status: "Success",
@@ -78,6 +89,7 @@ exports.createMovie = (req, res) => {
   const newId = movies[movies.length - 1].id + 1;
   let newMovie = Object.assign({ id: newId }, req.body);
   movies.push(newMovie);
+
   fs.writeFile("./data/movies.json", JSON.stringify(movies), (err) => {
     res.status(201).json({
       status: "Success",
