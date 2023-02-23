@@ -13,7 +13,12 @@ const logger = function (req, res, next) {
 
 // middleware to get reqest body
 app.use(express.json());
-app.use(morgan("dev"));
+
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+// to access static files
+app.use(express.static("./public"));
 app.use(logger);
 app.use((req, res, next) => {
   req.requestedAt = new Date().toISOString();
