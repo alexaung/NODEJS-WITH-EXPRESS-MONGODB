@@ -1,15 +1,15 @@
 const express = require("express");
-const moviesController = require("./../controllers/moviesController");
+const moviesController = require("../controllers/moviesController");
 
 const router = express.Router();
 
-router.param("id", moviesController.checkId);
+// router.param("id", moviesController.checkId);
 
 router
   .route("/")
   .get(moviesController.getAllMovies)
   //chaining multiple middleware
-  .post(moviesController.validateBody, moviesController.createMovie);
+  .post(moviesController.createMovie);
 
 router
   .route("/:id")

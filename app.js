@@ -19,7 +19,9 @@ if (process.env.NODE_ENV === "development") {
 }
 // to access static files
 app.use(express.static("./public"));
+
 app.use(logger);
+
 app.use((req, res, next) => {
   req.requestedAt = new Date().toISOString();
   next();
