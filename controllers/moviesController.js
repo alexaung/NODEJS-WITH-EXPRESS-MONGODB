@@ -38,8 +38,6 @@ exports.getMovie = async (req, res) => {
   }
 };
 
-exports.updateMovie = (req, res) => {};
-
 exports.createMovie = async (req, res) => {
   try {
     const movie = await Movie.create(req.body);
@@ -50,7 +48,23 @@ exports.createMovie = async (req, res) => {
       },
     });
   } catch (error) {
-    //console.log("Error occured: " + err);
+    res.status(404).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
+
+exports.updateMovie = async (req, res) => {
+  try {
+    const updateMovie = Movie.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    res.status(200).json({
+      status: "success",
+      data: {
+        updateMovie,
+      },
+    });
+  } catch (error) {
     res.status(404).json({
       status: "fail",
       message: error.message,
