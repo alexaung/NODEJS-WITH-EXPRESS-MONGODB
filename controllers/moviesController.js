@@ -5,7 +5,47 @@ const Movie = require("./../models/movieModel");
 
 exports.getAllMovies = async (req, res) => {
   try {
-    const movies = await Movie.find();
+    let queryObj = { ...req.query }; // Duplicate the query object
+    let excludedFields = ["sort", "page", "limit", "fields"];
+
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    // 1. Advanced filtering
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    queryObj = JSON.parse(queryStr);
+    let query = Movie.find(queryObj);
+
+    // 2. Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt"); // default sort
+    }
+
+    // 3. Field limiting
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v"); // excluding the version field
+    }
+
+    // 4. Pagination
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100; // default limit is 100
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numMovies = await Movie.countDocuments();
+      if (skip >= numMovies) throw new Error("This page does not exist");
+    }
+
+    // Execute the query
+    const movies = await query;
+
     res.status(200).json({
       status: "success",
       count: movies.length,
@@ -57,7 +97,10 @@ exports.createMovie = async (req, res) => {
 
 exports.updateMovie = async (req, res) => {
   try {
-    const updateMovie = Movie.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const updateMovie = Movie.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
     res.status(200).json({
       status: "success",
       data: {

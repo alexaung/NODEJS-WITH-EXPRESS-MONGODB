@@ -8,6 +8,7 @@ logs/
 # Ignore dotenv files
 .env
 
+
 # Ignore build artifacts
 build/
 dist/
@@ -30,6 +31,7 @@ coverage/
 .env.test
 .env.development
 .env.production
+config.env
 
 # Ignore temporary files
 *.swp
