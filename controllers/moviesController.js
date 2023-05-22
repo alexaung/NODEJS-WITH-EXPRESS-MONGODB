@@ -3,6 +3,7 @@ const Movie = require("./../models/movieModel");
 const QueryHandler = require("../utils/queryHandler");
 const customErrorHandler = require("../utils/customErrorHandler");
 const asyncErrorWrapper = require("../utils/asyncErrorWrapper");
+const mongoose = require("mongoose");
 
 // aliasing route
 exports.aliasTopMovies = (req, res, next) => {
@@ -30,7 +31,20 @@ exports.getAllMovies = asyncErrorWrapper(async (req, res, next) => {
 });
 
 exports.getMovie = asyncErrorWrapper(async (req, res, next) => {
-  const movie = await Movie.findById(req.params.id);
+  const id = req.params.id;
+
+  // check if id is valid ObjectId
+  // if (!mongoose.Types.ObjectId.isValid(id)) {
+  //   const error = new customErrorHandler("Invalid id", 400);
+  //   return next(error);
+  // }
+
+  const movie = await Movie.findById(id);
+
+  if (!movie) {
+    return next(new customErrorHandler("There is no movie with that id", 400));
+  }
+
   res.status(200).json({
     status: "success",
     data: {
@@ -50,21 +64,40 @@ exports.createMovie = asyncErrorWrapper(async (req, res, next) => {
   });
 });
 
-exports.updateMovie = asyncErrorWrapper(async (req, res, next) => {
-  const updateMovie = Movie.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  res.status(200).json({
-    status: "success",
-    data: {
-      updateMovie,
-    },
-  });
-});
+exports.updateMovie = async (req, res, next) => {
+  try {
+    const updateMovie = Movie.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updateMovie) {
+      return next(
+        new customErrorHandler("There is no movie with that id", 400)
+      );
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        updateMovie,
+      },
+    });
+  } catch (err) {
+    res.stats(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
 
 exports.deleteMovie = asyncErrorWrapper(async (req, res, next) => {
-  await Movie.findByIdAndDelete(req.params.id);
+  const deletedMovie = await Movie.findByIdAndDelete(req.params.id);
+
+  if (!deletedMovie) {
+    return next(new customErrorHandler("There is no movie with that id", 400));
+  }
+
   res.status(204).json({
     status: "success",
     data: null,
