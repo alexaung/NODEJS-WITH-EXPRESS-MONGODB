@@ -5,6 +5,7 @@ node_modules/
 logs/
 *.log
 
+
 # Ignore dotenv files
 .env
 

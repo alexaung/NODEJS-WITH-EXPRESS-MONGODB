@@ -88,7 +88,7 @@ movieSchema.pre(/^save/, function (next) {
 
 movieSchema.post(/^save/, function (doc, next) {
   const content = `Movie ${doc.name} is created by ${doc.createdBy} at ${doc.createdAt} \n`;
-  fs.writeFileSync("./log/log.txt", content, { flag: "a" }, (err) => {
+  fs.writeFileSync("./log/log.log", content, { flag: "a" }, (err) => {
     console.log(err.message);
   });
   next();
@@ -107,7 +107,7 @@ movieSchema.post(/^find/, function (doc, next) {
 
   const timeTaken = this.endTime - this.startTime;
   const content = `Query took ${timeTaken} milliseconds \n`;
-  fs.writeFileSync("./log/log.txt", content, { flag: "a" }, (err) => {
+  fs.writeFileSync("./log/log.log", content, { flag: "a" }, (err) => {
     console.log(err.message);
   });
   next();
