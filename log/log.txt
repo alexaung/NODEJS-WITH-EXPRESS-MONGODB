@@ -27,3 +27,8 @@ Query took 308 milliseconds
 Query took 310 milliseconds 
 Query took 294 milliseconds 
 Query took 302 milliseconds 
+Query took 394 milliseconds 
+Query took 411 milliseconds 
+Query took 423 milliseconds 
+Query took 311 milliseconds 
+Query took 378 milliseconds 

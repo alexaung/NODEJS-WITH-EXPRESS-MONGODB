@@ -87,3 +87,13 @@ exports.protect = asyncErrorWrapper(async (req, res, next) => {
   req.user = user;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles ["admin", "user"]
+    if (!roles.includes(req.user.role)) {
+      return next(new CustomError("You are not authorized", 403));
+    }
+    next();
+  };
+}

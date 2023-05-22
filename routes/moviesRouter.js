@@ -20,8 +20,8 @@ router
 
 router
   .route("/:id")
-  .get(authController.protect, moviesController.getMovie)
+  .get(authController.protect, authController.restrictTo("user", "admin"), moviesController.getMovie)
   .patch(moviesController.updateMovie)
-  .delete(moviesController.deleteMovie);
+  .delete(authController.protect, authController.restrictTo('admin'), moviesController.deleteMovie);
 
 module.exports = router;
