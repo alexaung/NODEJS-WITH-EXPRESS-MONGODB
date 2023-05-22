@@ -14,7 +14,6 @@ exports.aliasTopMovies = (req, res, next) => {
 
 exports.getAllMovies = async (req, res) => {
   try {
-    
     let queryHandler = new QueryHandler(Movie.find(), req.query)
       .filter()
       .sort()
@@ -137,6 +136,88 @@ exports.deleteMovie = (req, res) => {
     res.status(204).json({
       status: "success",
       data: null,
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
+
+// AGGREGATION PIPELINE
+exports.getMovieStats = async (req, res) => {
+  try {
+    const stats = await Movie.aggregate([
+      {
+        $match: { ratings: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          //_id: null,
+          _id: "$releaseYear",
+          numMovies: { $sum: 1 },
+          avgRating: { $avg: "$ratings" },
+          avgPrice: { $avg: "$price" },
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+        },
+      },
+      {
+        $sort: { minPrice: 1 },
+      },
+      {
+        $match: { maxPrice: { $gte: 60 } },
+      },
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        stats,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+};
+
+// AGGREGATION PIPELINE
+exports.getMovieByGenre = async (req, res) => {
+  try {
+    const genre = req.params.genre;
+    const stats = await Movie.aggregate([
+      { $unwind: "$genres" },
+      {
+        $group: {
+          _id: "$genres",
+          numMovies: { $sum: 1 },
+          movies: { $push: "$name" },
+        },
+      },
+      {
+        $addFields: { genre: "$_id" },
+      },
+      {
+        $project: { _id: 0 },
+      },
+      {
+        $sort: { numMovies: -1 },
+      },
+      {
+        $match: { genre: genre },
+      },
+      
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        stats,
+      },
     });
   } catch (error) {
     res.status(404).json({

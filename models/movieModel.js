@@ -23,7 +23,7 @@ const movieSchema = new mongoose.Schema({
     type: Date,
     require: [true, "Release date is required field"],
   },
-  createdAt: { type: Date, default: Date.now() },
+  createdAt: { type: Date, default: Date.now(), select: false },
   genres: {
     type: [String],
     require: [true, "Genre is required field"],
