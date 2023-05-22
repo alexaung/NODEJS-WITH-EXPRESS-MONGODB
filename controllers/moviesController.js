@@ -8,7 +8,6 @@ const QueryHandler = require("../utils/queryHandler");
 exports.aliasTopMovies = (req, res, next) => {
   req.query.limit = "5";
   req.query.sort = "-ratings";
-  // req.query.fields = "title,ratingsAverage,summary";
   next();
 };
 
@@ -20,45 +19,6 @@ exports.getAllMovies = async (req, res) => {
       .limitFields()
       .paginate();
 
-    // let queryObj = { ...req.query }; // Duplicate the query object
-    // let excludedFields = ["sort", "page", "limit", "fields"];
-
-    // excludedFields.forEach((el) => delete queryObj[el]);
-
-    // // 1. Advanced filtering
-    // let queryStr = JSON.stringify(queryObj);
-    // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    // queryObj = JSON.parse(queryStr);
-    // let query = Movie.find(queryObj);
-
-    // // 2. Sorting
-    // if (req.query.sort) {
-    //   const sortBy = req.query.sort.split(",").join(" ");
-    //   query = query.sort(sortBy);
-    // } else {
-    //   query = query.sort("-createdAt"); // default sort
-    // }
-
-    // // 3. Field limiting
-    // if (req.query.fields) {
-    //   const fields = req.query.fields.split(",").join(" ");
-    //   query = query.select(fields);
-    // } else {
-    //   query = query.select("-__v"); // excluding the version field
-    // }
-
-    // // 4. Pagination
-    // const page = req.query.page * 1 || 1;
-    // const limit = req.query.limit * 1 || 100; // default limit is 100
-    // const skip = (page - 1) * limit;
-    // query = query.skip(skip).limit(limit);
-
-    // if (req.query.page) {
-    //   const numMovies = await Movie.countDocuments();
-    //   if (skip >= numMovies) throw new Error("This page does not exist");
-    // }
-
-    // // Execute the query
     const movies = await queryHandler.query;
 
     res.status(200).json({
@@ -166,9 +126,6 @@ exports.getMovieStats = async (req, res) => {
       {
         $sort: { minPrice: 1 },
       },
-      {
-        $match: { maxPrice: { $gte: 60 } },
-      },
     ]);
 
     res.status(200).json({
@@ -210,7 +167,6 @@ exports.getMovieByGenre = async (req, res) => {
       {
         $match: { genre: genre },
       },
-      
     ]);
 
     res.status(200).json({
