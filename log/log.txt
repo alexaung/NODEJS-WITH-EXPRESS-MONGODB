@@ -13,3 +13,17 @@ Query took 381 milliseconds
 Query took 303 milliseconds 
 Query took 318 milliseconds 
 Query took 306 milliseconds 
+Query took 354 milliseconds 
+Query took 362 milliseconds 
+Query took 322 milliseconds 
+Query took 316 milliseconds 
+Query took 312 milliseconds 
+Query took 352 milliseconds 
+Query took 390 milliseconds 
+Query took 361 milliseconds 
+Query took 308 milliseconds 
+Query took 312 milliseconds 
+Query took 308 milliseconds 
+Query took 310 milliseconds 
+Query took 294 milliseconds 
+Query took 302 milliseconds 

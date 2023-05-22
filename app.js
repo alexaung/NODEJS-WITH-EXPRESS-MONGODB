@@ -1,9 +1,12 @@
 // import package
 const express = require("express");
 const morgan = require("morgan");
-const moviesRouter = require("./routes/moviesRoutes");
+
+const moviesRouter = require("./routes/moviesRouter");
+const authRouter = require("./routes/authRouter");
+
 const globalErrorHandler = require("./controllers/errorController");
-const customErrorHandler = require("./utils/customErrorHandler");
+const customErrorHandler = require("./utils/customError");
 
 let app = express();
 
@@ -36,6 +39,7 @@ app.use((req, res, next) => {
 
 // USING ROUTES
 app.use("/api/v1/movies", moviesRouter);
+app.use("/api/v1/users", authRouter);
 
 // default route
 // fallback route

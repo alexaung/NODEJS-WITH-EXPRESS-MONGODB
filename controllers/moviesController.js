@@ -1,9 +1,7 @@
-const fs = require("fs");
 const Movie = require("./../models/movieModel");
 const QueryHandler = require("../utils/queryHandler");
-const customErrorHandler = require("../utils/customErrorHandler");
+const CustomError = require("../utils/customError");
 const asyncErrorWrapper = require("../utils/asyncErrorWrapper");
-const mongoose = require("mongoose");
 
 // aliasing route
 exports.aliasTopMovies = (req, res, next) => {
@@ -33,16 +31,10 @@ exports.getAllMovies = asyncErrorWrapper(async (req, res, next) => {
 exports.getMovie = asyncErrorWrapper(async (req, res, next) => {
   const id = req.params.id;
 
-  // check if id is valid ObjectId
-  // if (!mongoose.Types.ObjectId.isValid(id)) {
-  //   const error = new customErrorHandler("Invalid id", 400);
-  //   return next(error);
-  // }
-
   const movie = await Movie.findById(id);
 
   if (!movie) {
-    return next(new customErrorHandler("There is no movie with that id", 400));
+    return next(new CustomError("There is no movie with that id", 400));
   }
 
   res.status(200).json({
@@ -73,7 +65,7 @@ exports.updateMovie = async (req, res, next) => {
 
     if (!updateMovie) {
       return next(
-        new customErrorHandler("There is no movie with that id", 400)
+        new CustomError("There is no movie with that id", 400)
       );
     }
 
@@ -95,7 +87,7 @@ exports.deleteMovie = asyncErrorWrapper(async (req, res, next) => {
   const deletedMovie = await Movie.findByIdAndDelete(req.params.id);
 
   if (!deletedMovie) {
-    return next(new customErrorHandler("There is no movie with that id", 400));
+    return next(new CustomError("There is no movie with that id", 400));
   }
 
   res.status(204).json({

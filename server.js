@@ -40,3 +40,11 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
+
+
+// const crypto = require('crypto');
+
+// Generate a 32 bytes long secret
+// const secret = crypto.randomBytes(32).toString('hex');
+
+// console.log(secret);

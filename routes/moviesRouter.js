@@ -1,5 +1,6 @@
 const express = require("express");
 const moviesController = require("../controllers/moviesController");
+const authController = require("../controllers/authController");
 
 const router = express.Router();
 
@@ -13,13 +14,13 @@ router.route("/movies-by-genre/:genre").get(moviesController.getMovieByGenre);
 
 router
   .route("/")
-  .get(moviesController.getAllMovies)
+  .get(authController.protect, moviesController.getAllMovies)
   //chaining multiple middleware
   .post(moviesController.createMovie);
 
 router
   .route("/:id")
-  .get(moviesController.getMovie)
+  .get(authController.protect, moviesController.getMovie)
   .patch(moviesController.updateMovie)
   .delete(moviesController.deleteMovie);
 
