@@ -3,6 +3,14 @@ const Movie = require("./../models/movieModel");
 
 // ROUTE HANDLER FUNCTIONS
 
+// aliasing route
+exports.aliasTopMovies = (req, res, next) => {
+  req.query.limit = "5";
+  req.query.sort = "-ratings";
+  // req.query.fields = "title,ratingsAverage,summary";
+  next();
+};
+
 exports.getAllMovies = async (req, res) => {
   try {
     let queryObj = { ...req.query }; // Duplicate the query object
