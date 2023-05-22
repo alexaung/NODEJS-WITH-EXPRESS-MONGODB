@@ -16,19 +16,23 @@ const prodError = (err, res) => {
 
   // Wrong id error
   if (err.name === "CastError") {
-    const message = `Resource not found. Invalid: ${err.path}`;
+    const message = `Resource not found. Invalid: ${err.path}. Invalid identifier provided.`;
     error = new customErrorHandler(message, 400);
   }
 
   // Duplicate key error
   if (err.code === 11000) {
-    const message = `Duplicate ${Object.keys(err.keyValue)} entered`;
+    const message = `Duplicate ${Object.keys(
+      err.keyValue
+    )} entered. Please use a unique value.`;
     error = new customErrorHandler(message, 400);
   }
 
   // Validation error
   if (err.name === "ValidationError") {
-    const message = Object.values(err.errors).map((value) => value.message);
+    const message = `Invalid data submitted. ${Object.values(err.errors).map(
+      (value) => value.message
+    )} Please check your inputs.`;
     error = new customErrorHandler(message, 400);
   }
 
@@ -41,7 +45,7 @@ const prodError = (err, res) => {
     // Unknown error
     res.status(500).json({
       status: "error",
-      message: "Internal Server Error",
+      message: "An unexpected error occurred. Please try again later.",
     });
   }
 };
