@@ -1,5 +1,6 @@
 const fs = require("fs");
 const Movie = require("./../models/movieModel");
+const QueryHandler = require("../utils/queryHandler");
 
 // ROUTE HANDLER FUNCTIONS
 
@@ -13,46 +14,53 @@ exports.aliasTopMovies = (req, res, next) => {
 
 exports.getAllMovies = async (req, res) => {
   try {
-    let queryObj = { ...req.query }; // Duplicate the query object
-    let excludedFields = ["sort", "page", "limit", "fields"];
+    
+    let queryHandler = new QueryHandler(Movie.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
-    excludedFields.forEach((el) => delete queryObj[el]);
+    // let queryObj = { ...req.query }; // Duplicate the query object
+    // let excludedFields = ["sort", "page", "limit", "fields"];
 
-    // 1. Advanced filtering
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    queryObj = JSON.parse(queryStr);
-    let query = Movie.find(queryObj);
+    // excludedFields.forEach((el) => delete queryObj[el]);
 
-    // 2. Sorting
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(",").join(" ");
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort("-createdAt"); // default sort
-    }
+    // // 1. Advanced filtering
+    // let queryStr = JSON.stringify(queryObj);
+    // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // queryObj = JSON.parse(queryStr);
+    // let query = Movie.find(queryObj);
 
-    // 3. Field limiting
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      query = query.select(fields);
-    } else {
-      query = query.select("-__v"); // excluding the version field
-    }
+    // // 2. Sorting
+    // if (req.query.sort) {
+    //   const sortBy = req.query.sort.split(",").join(" ");
+    //   query = query.sort(sortBy);
+    // } else {
+    //   query = query.sort("-createdAt"); // default sort
+    // }
 
-    // 4. Pagination
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 100; // default limit is 100
-    const skip = (page - 1) * limit;
-    query = query.skip(skip).limit(limit);
+    // // 3. Field limiting
+    // if (req.query.fields) {
+    //   const fields = req.query.fields.split(",").join(" ");
+    //   query = query.select(fields);
+    // } else {
+    //   query = query.select("-__v"); // excluding the version field
+    // }
 
-    if (req.query.page) {
-      const numMovies = await Movie.countDocuments();
-      if (skip >= numMovies) throw new Error("This page does not exist");
-    }
+    // // 4. Pagination
+    // const page = req.query.page * 1 || 1;
+    // const limit = req.query.limit * 1 || 100; // default limit is 100
+    // const skip = (page - 1) * limit;
+    // query = query.skip(skip).limit(limit);
 
-    // Execute the query
-    const movies = await query;
+    // if (req.query.page) {
+    //   const numMovies = await Movie.countDocuments();
+    //   if (skip >= numMovies) throw new Error("This page does not exist");
+    // }
+
+    // // Execute the query
+    const movies = await queryHandler.query;
 
     res.status(200).json({
       status: "success",
