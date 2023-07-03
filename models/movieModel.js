@@ -22,7 +22,8 @@ const movieSchema = new mongoose.Schema(
     ratings: {
       type: Number,
       validate: {
-        validator: function (value) { // custom validator
+        validator: function (value) {
+          // custom validator
           return value >= 1 && value <= 10;
         },
         message: "Rating {VALUE} must be between 1 and 10",
@@ -115,7 +116,8 @@ movieSchema.post(/^find/, function (doc, next) {
 
 // aggregation middleware
 movieSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({ $match: { releaseDate: { $lte: Date.now() } } });
+  // unshift is used to add element at the beginning of array
+  this.pipeline().unshift({ $match: { releaseDate: { $lte: new Date() } } });
   next();
 });
 
